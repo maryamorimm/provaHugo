@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+<h:head>
+	<title>Criar Aluno</title>
+</h:head>
+
+<h:body>
+<h1> Criar Aluno</h1>
+	<h:form id="form">
+		<p:growl id="growl" showDetail="true" sticky="true" />
+		
+<!-- //salvar nome do aluno  -->		
+
+		<p:panelGrid style="margin-botton:20px" columns="2" layout="grid">		
+			<p:outputLabel value="Nome do aluno:" />
+			<p:inputText id="nomeAluno" label="nome"
+				value="#{alunoBeans.aluno.nome}" style="width:350px" required="true" />
+		</p:panelGrid>
+
+
+<!-- //salvar aluno  -->
+
+		<p:commandButton value="Salvar Aluno" update="growl: form"
+			action="#{alunoBeans.salvarAluno()}">
+		</p:commandButton>
+
+	</h:form>
+</h:body>
+
+
+</html>

@@ -12,7 +12,7 @@ import javax.persistence.SequenceGenerator;
 public class Disciplina implements Identificavel{
 
 	private String nome;
-	private String professor;
+	private Professor professor;
 	@Id
 	@GeneratedValue(generator="disciplina_seq", strategy=GenerationType.SEQUENCE)
 	@SequenceGenerator(name="disciplina_seq")
@@ -24,10 +24,10 @@ public class Disciplina implements Identificavel{
 	public void setNome(String nome) {
 		this.nome = nome;
 	}
-	public String getProfessor() {
+	public Professor getProfessor() {
 		return professor;
 	}
-	public void setProfessor(String professor) {
+	public void setProfessor(Professor professor) {
 		this.professor = professor;
 	}
 	public Long getId() {
@@ -42,7 +42,6 @@ public class Disciplina implements Identificavel{
 	public void setAlunos(Set<Aluno> alunos) {
 		this.alunos = alunos;
 	}
-	
 	
 	
 }
