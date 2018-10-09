@@ -4,6 +4,8 @@ import java.io.Serializable;
 import java.util.Set;
 
 import javax.annotation.PostConstruct;
+import javax.faces.application.FacesMessage;
+import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 
 import Servicos.AlunoServicos;
@@ -34,10 +36,34 @@ public class AlunoBeans implements Serializable {
 	
 	public void salvarAluno() {
 		service.save(aluno);
-		aluno = new Aluno();
+		limpar();
+
 
 	}
+		
+
+	// Conferir 
 	
+	
+	public void onRowEdit(Aluno obj) {
+		service.update(obj);
+		FacesMessage msg = new FacesMessage("Aluno editado", obj.getNome());
+		FacesContext.getCurrentInstance().addMessage(null, msg);
+		limpar();
+	}
+
+	private void limpar() {
+		aluno = new Aluno();
+		setAlunos((Set<Aluno>) service.getAll());
+
+	}
+
+	public void removerAluno(Aluno a) {
+		service.remove(a);
+		limpar();
+	}
+
+
 	
 	// get e set 
 	

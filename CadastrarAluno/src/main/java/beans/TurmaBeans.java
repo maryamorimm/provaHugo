@@ -1,31 +1,51 @@
 package beans;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import javax.annotation.PostConstruct;
+import javax.faces.application.FacesMessage;
+import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 
+import org.primefaces.model.DualListModel;
+
+import Servicos.AlunoServicos;
 import Servicos.TurmaServicos;
+import entidades.Aluno;
 import entidades.Turma;
 
 public class TurmaBeans implements Serializable {
 	
+	// variáveis
 	
 	private static final long serialVersionUID = 1L;
 	private Turma turma = new Turma();
 	private Set<Turma> turmas;
 	
 	
-	
-	@PostConstruct
-	private void init() {
-
+	public ArrayList<String> getSelectIdAlunos() {
+		return selectIdAlunos;
 	}
 
+	public void setSelectIdAlunos(ArrayList<String> selectIdAlunos) {
+		this.selectIdAlunos = selectIdAlunos;
+	}
+
+	private ArrayList<String> selectIdAlunos;
+	
 	
 	@Inject
 	private TurmaServicos service;
+	
+	@Inject
+	private AlunoServicos alunoService;
+	
+	private boolean renderPanelEdicao;
+	private DualListModel<Aluno> pickListAluno;
 
 
 	
@@ -62,13 +82,45 @@ public class TurmaBeans implements Serializable {
 	}
 	
 	
-	
-	//Métdos 
-	public void salvarTurma() {
+	public AlunoServicos getAlunoService() {
+		return alunoService;
+	}
 
+	public void setAlunoService(AlunoServicos alunoService) {
+		this.alunoService = alunoService;
+	}
+
+	public boolean isRenderPanelEdicao() {
+		return renderPanelEdicao;
+	}
+
+	public void setRenderPanelEdicao(boolean renderPanelEdicao) {
+		this.renderPanelEdicao = renderPanelEdicao;
+	}
+
+	public DualListModel<Aluno> getPickListAluno() {
+		return pickListAluno;
+	}
+
+	public void setPickListAluno(DualListModel<Aluno> pickListAluno) {
+		this.pickListAluno = pickListAluno;
+	}
+
+	//Métdos 
+	
+	
+			//Limpar Turma
+	public void limpar() {
+		turma = new Turma();
+		turmas = (Set<Turma>)getService().getAll();
 	}
 	
-	
+			//Remover Turma
+	public void removerTurma(Turma t) {
+		service.remove(t);
+		limpar();
+	}
+
 
 	
 	

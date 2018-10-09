@@ -73,7 +73,14 @@ public class ProfessorBeans  implements Serializable {
 // métodos 
 	
 	
+				// Limpar professores
+	public void limpar() {
+		professor = new Professor();
+		profs = (Set<Professor>) getService().getAll();
+		
+	}
 	
+				// Salvar professores
 	public void salvarProfessor() {
 		if (!professor.getSenha().equals(confirmarSenha)) {
 			FacesContext.getCurrentInstance().addMessage(null, new FacesMessage("ERROR", "senhas diferentes!"));
@@ -94,6 +101,18 @@ public class ProfessorBeans  implements Serializable {
 		}
 
 	}
+	
+	
+				// Remover professores
+	public void removerProf(Professor p) {
+		service.remove(p);
+		limpar();
+	}
+
+	
+	
+	
+	
 
 
 }
