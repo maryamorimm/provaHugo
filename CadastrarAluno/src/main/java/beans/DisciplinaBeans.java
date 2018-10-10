@@ -2,13 +2,17 @@ package beans;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import javax.annotation.PostConstruct;
+import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedProperty;
+import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 
+import org.primefaces.PrimeFaces;
 import org.primefaces.model.DualListModel;
 
 import Servicos.AlunoServicos;
@@ -25,12 +29,14 @@ public class DisciplinaBeans implements Serializable {
 	
 	private Set<Disciplina> disciplinas;
 	
+	
 	@Inject
 	private DisciplinaServicos service;
 	
 	@ManagedProperty(value="#{professorBean}")
 	private ProfessorBeans profBean;
 
+	private Disciplina disciplinaSelecionada;
 	
 // Conferir
 	
@@ -128,12 +134,13 @@ public class DisciplinaBeans implements Serializable {
 	
 
 	@PostConstruct
-	private void init() {
-		service = new DisciplinaServicos();
+	public void init() {
+		atualizar();
+		disciplina.getProfessor().setId(0L);
+		setRenderPanelCadastro(false);
 	}
-
 	
-	public void limpar() {
+	public void atualizar() {
 		disciplina = new Disciplina();
 		disciplinas = (Set<Disciplina>) service.getAll();
 		discMatriculaAluno = new Disciplina();
@@ -145,7 +152,7 @@ public class DisciplinaBeans implements Serializable {
 	public void salvarDisc() {
 		disciplina.setProfessor(profService.getByID(disciplina.getProfessor().getId()));
 		service.save(disciplina);
-		limpar();
+		atualizar();
 	
 }
 	
@@ -153,12 +160,33 @@ public class DisciplinaBeans implements Serializable {
 	
 	public void removerDisciplina(Disciplina disciplina) {
 		service.remove(disciplina);
-		limpar();
+		atualizar();
 	}
 	
-
 	
-	// FALTA O RESTO DOS MÉTODOS
+	
+	//Iniciar lista de alunos totais e lista de alunos matriculados na disciplina:
 
+	public void iniciarPickListAluno() {
+		ArrayList<Aluno> alunosSource = new ArrayList<Aluno>();
+		ArrayList<Aluno> alunosTarget = new ArrayList<Aluno>();
+		alunosSource.addAll(getAlunoService().getAll());
+		alunosSource.removeAll(discMatriculaAluno.getAlunos());
+		alunosTarget.addAll(discMatriculaAluno.getAlunos());
+		setPickListAluno(new DualListModel<Aluno>(alunosSource, alunosTarget));
+	}
+
+	//salvar lista de alunos totais e lista de alunos matriculados na disciplina:
+	
+	public void salvarPickListAluno() {
+		Set<Aluno> alunosDiscSelecionada = new HashSet<Aluno>();
+		alunosDiscSelecionada.addAll(getPickListAluno().getTarget());
+		discMatriculaAluno.getAlunos().addAll(alunosDiscSelecionada);
+		service.update(discMatriculaAluno);
+		atualizar();
+		PrimeFaces.current().ajax().update("form");
+		setPickListAluno(new DualListModel<Aluno>());
+		setRenderPanelCadastro(false);
+	}
 
 }

@@ -1,12 +1,18 @@
 package beans;
 
+import java.io.IOException;
 import java.io.Serializable;
+import java.security.Principal;
 import java.util.Set;
 
 import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
+import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 import Servicos.ProfessorServicos;
 import entidades.Professor;
@@ -15,6 +21,7 @@ public class ProfessorBeans  implements Serializable {
 	
 
 	private static final long serialVersionUID = 1L;
+
 	private Professor professor = new Professor();
 	private Set<Professor> profs;
 	
@@ -22,10 +29,7 @@ public class ProfessorBeans  implements Serializable {
 	private ProfessorServicos service;
 	private String confirmarSenha;
 
-	@PostConstruct
-	private void init() {
-		service = new ProfessorServicos();
-	}
+	
 	
 	// get e set dos atributos
 	
@@ -72,9 +76,14 @@ public class ProfessorBeans  implements Serializable {
 
 // métodos 
 	
+	@PostConstruct
+	private void init() {
+		service = new ProfessorServicos();
+	}
 	
-				// Limpar professores
-	public void limpar() {
+	
+				// Atualizar professores
+	public void atualizar() {
 		professor = new Professor();
 		profs = (Set<Professor>) getService().getAll();
 		
@@ -96,7 +105,7 @@ public class ProfessorBeans  implements Serializable {
 						new FacesMessage("ERROR", "login já existe"));
 			} else {
 				service.save(professor);
-				professor = new Professor();
+				atualizar();
 			}
 		}
 
@@ -106,13 +115,46 @@ public class ProfessorBeans  implements Serializable {
 				// Remover professores
 	public void removerProf(Professor p) {
 		service.remove(p);
-		limpar();
+		atualizar();
 	}
+	
+	
 
 	
+	public void onRowEdit (Professor p) {
+		service.update(p);
+		FacesMessage msg = new FacesMessage("Professor editado", p.getNome());
+		FacesContext.getCurrentInstance().addMessage(null, msg);
+		atualizar();
+	}
 	
-	
-	
+	public String getUserLogin() {
+		FacesContext facesContext = FacesContext.getCurrentInstance();
+		ExternalContext externalContext = facesContext.getExternalContext();
+		Principal userPrincipal = externalContext.getUserPrincipal();
+		if (userPrincipal == null) {
+			return "Olá! Faça o login para usar o sistema";
+		}
+		return "Olá, "+userPrincipal.getName();
+	}
+
+	public void efetuarLogout() throws IOException, ServletException {
+		FacesContext fc = FacesContext.getCurrentInstance();
+		ExternalContext ec = fc.getExternalContext();
+		HttpSession session = (HttpSession) ec.getSession(false);
+		session.invalidate();
+		HttpServletRequest request = (HttpServletRequest) ec.getRequest();
+		request.logout();
+		ec.redirect(ec.getApplicationContextPath());
+	}
+
+	public boolean isUserInRole(String role) {
+		FacesContext facesContext = FacesContext.getCurrentInstance();
+		ExternalContext externalContext = facesContext.getExternalContext();
+		return externalContext.isUserInRole(role);
+	}
+
+		
 
 
 }

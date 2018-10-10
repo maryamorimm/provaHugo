@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+
+<h:head>
+	<title>Turmas</title>
+</h:head>
+
+<h:body>
+	<h:form id="formMenu">
+		<p:menubar>
+			<f:facet name="options">
+					#{professorBeans.userLogin}
+						<p:commandButton id="menuItemLogout" value="Logout"
+					icon="fa fa-fw fa-sign-out"
+					action="#{professorBeans.efetuarLogout()}" ajax="false" />
+			</f:facet>
+		</p:menubar>
+	</h:form>
+	<h:form id="form">
+		<p:growl id="growl" showDetail="true" sticky="true" />
+		<p:megaMenu orientation="horizontal" style="margin-top:20px">
+			<p:submenu label="Cadastro" icon="ui-icon-disk"
+				rendered="#{professorBeans.isUserInRole('PROF')}">
+				
+				
+				<p:column>
+						<p:submenu label="Cadastros de entidadaes">
+					<p:menuitem icon="ui-icon-disk" value="Criar Professor"
+						url="/privada/criarProfessor.xhtml" />
+					<p:menuitem icon="ui-icon-disk" value="Criar Aluno"
+						url="/privada/criarAluno.xhtml" />
+					<p:menuitem icon="ui-icon-disk" value="Criar Disciplina"
+						url="/privada/criarDisciplinaxhtml" />
+					<p:menuitem icon="ui-icon-disk" value="Criar Turma"
+						url="/privada/criarTurma.xhtml" />
+					<p:menuitem icon="ui-icon-disk" value="Matricular disciplina"
+						url="/privada/matricularNaDisciplina.xhtml" />
+
+				</p:submenu>
+
+				</p:column>
+
+			</p:submenu>
+			<p:submenu label="Visualizar" icon="ui-icon-search">
+				<p:column>
+					<p:submenu label="Visualizar entidades">
+					
+						<p:menuitem icon="ui-icon-search" value="Alunos cadastrados"
+							url="/privada/alunosCadastrados.xhtml"
+							rendered="#{professorBeans.isUserInRole('PROF')}" />
+							
+						<!-- PÁGINA PÚBLICA-->
+						
+						<p:menuitem icon="ui-icon-search" value="Turmas cadastradas"
+							url="/publica/turmasCadastradas.xhtml" />
+							
+						<p:menuitem icon="ui-icon-search" value="Professores cadastrados"
+							url="/publica/professoresCadastrados.xhtml" />
+							
+						<p:menuitem icon="ui-icon-search" value="Disciplinas cadastrados"
+							url="/publica/disciplinasCadastradas.xhtml	" />
+					</p:submenu>
+
+
+				</p:column>
+
+			</p:submenu>
+
+		</p:megaMenu>
+
+
+		<p:carousel value="#{turmaBeans.turmas}" id="turmaCarousel" var="turma"
+			headerText="Turmas cadastradas" itemStyle="text-align:center"
+			styleClass="ui-panelgrid-blank">
+			<p:panelGrid columns="2" style="width:100%;margin:10px 0px"
+				columnClasses="label, value">
+
+				<f:facet name="header">#{turma.nome}</f:facet>
+
+				<h:outputText value="Decricao: " />
+				<h:outputText value="#{turma.descricao}" />
+
+				<h:outputText value="Qnt. de alunos matriculados: " />
+				<h:outputText value="#{turma.alunos.size()}" />
+
+				<h:outputText value="Alunos cadastrados: " />
+				<p:commandButton update="form" value="Visualizar"
+					oncomplete="PF('turmaDialog').show()" icon="ui-icon-search">
+					<f:setPropertyActionListener value="#{turma}"
+						target="#{turmaBeans.turmaSelecionada}" />
+					<f:setPropertyActionListener value="#{'false'}"
+						target="#{turmaBeans.renderPanelEdicao}" />
+				</p:commandButton>
+
+				<h:outputText value="Editar turma: " />
+				<p:commandButton update="form" value="Editar"
+					action="#{turmaBeans.iniciarDualListAluno}">
+					<f:setPropertyActionListener value="#{'true'}"
+						target="#{turmaBeans.renderPanelEdicao}" />
+					<f:setPropertyActionListener value="#{turma}"
+						target="#{turmaBeans.turmaSelecionada}" />
+				</p:commandButton>
+
+				<h:outputText value="Remover turma: "
+					rendered="#{professorBeans.isUserInRole('PROF')}" />
+				<p:commandButton value="Remover"
+					rendered="#{professorBeans.isUserInRole('PROF')}"
+					action="#{turmaBeans.removerTurma(turma)}" update="form" />
+			</p:panelGrid>
+		</p:carousel>
+
+
+		<p:dialog widgetVar="turmaDialog" resizable="false" modal="true"
+			header="Alunos da turma #{turmaBeans.turmaSelecionada.nome}">
+
+			<p:outputPanel id="turmaDialogPanel" style="text-align:center;">
+
+				<p:dataTable var="alunoMatriculado"
+					value="#{turmaBeans.turmaSelecionada.alunos}"
+					emptyMessage="Sem alunos cadastrados">
+
+					<p:column headerText="Nome">
+						<h:outputText value="#{alunoMatriculado.nome}" />
+					</p:column>
+
+
+					<p:column headerText="ID">
+						<h:outputText value="#{alunoMatriculado.id}" />
+					</p:column>
+
+				</p:dataTable>
+			</p:outputPanel>
+		</p:dialog>
+
+		<p:outputPanel rendered="#{turmaBeans.renderPanelEdicao}">
+			<p:panelGrid columns="2" style="width:100%;margin:10px 0px"
+				layout="grid" columnClasses="label,value">
+
+				<f:facet name="header">
+					<p:outputLabel style="font-weight: bold;" value="Editar Turma" />
+				</f:facet>
+
+				<h:outputText value="Nome: " />
+				<p:inputText value="#{turmaBeans.turmaSelecionada.nome}" />
+
+				<h:outputText value="Descricao: " />
+				<p:inputText value="#{turmaBeans.turmaSelecionada.descricao}" />
+
+
+
+				<p:column id="colunaBotaoEditar">
+					<p:commandButton action="#{turmaBeans.concluirEdicao}"
+						value="Salvar Edição" update="form" />
+				</p:column>
+			</p:panelGrid>
+			<p:pickList value="#{turmaBeans.pickListAluno}"
+				id="pickListAlunoTurma" var="aluno" itemLabel="#{aluno.nome}"
+				showSourceFilter="true" filterMatchMode="contains"
+				showTargetFilter="true" showCheckbox="true" itemValue="#{aluno}"
+				addAllLabel="Matricular todos" addLabel="Matricular"
+				removeAllLabel="Remover todos" removeLabel="Remover"
+				converter="alunoPickListConverter" required="true"
+				requiredMessage="Selecione ao menos um aluno!">
+
+				<f:facet name="sourceCaption">Todos os alunos</f:facet>
+				<f:facet name="targetCaption">Alunos cadastrados</f:facet>
+			</p:pickList>
+		</p:outputPanel>
+	</h:form>
+</h:body>
+</html>

@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+
+<h:head>
+	<title>Professores</title>
+</h:head>
+
+<h:body>
+	<h:form id="formMenu">
+		<p:menubar>
+			<f:facet name="options">
+						#{professorBeans.userLogin}
+						<p:commandButton id="menuItemLogout" value="Logout"
+					icon="fa fa-fw fa-sign-out"
+					action="#{professorBeans.efetuarLogout()}" ajax="false" />
+			</f:facet>
+		</p:menubar>
+	</h:form>
+	<h:form id="form">
+		<p:growl id="growl" showDetail="true" sticky="true" />
+		<p:megaMenu orientation="horizontal" style="margin-top:20px">
+			<p:submenu label="Cadastro" icon="ui-icon-disk"
+				rendered="#{professorBeans.isUserInRole('PROF')}">
+				
+				
+				<p:column>
+						<p:submenu label="Cadastros de entidadaes">
+					<p:menuitem icon="ui-icon-disk" value="Criar Professor"
+						url="/privada/criarProfessor.xhtml" />
+					<p:menuitem icon="ui-icon-disk" value="Criar Aluno"
+						url="/privada/criarAluno.xhtml" />
+					<p:menuitem icon="ui-icon-disk" value="Criar Disciplina"
+						url="/privada/criarDisciplinaxhtml" />
+					<p:menuitem icon="ui-icon-disk" value="Criar Turma"
+						url="/privada/criarTurma.xhtml" />
+					<p:menuitem icon="ui-icon-disk" value="Matricular disciplina"
+						url="/privada/matricularNaDisciplina.xhtml" />
+
+				</p:submenu>
+
+				</p:column>
+
+			</p:submenu>
+			<p:submenu label="Visualizar" icon="ui-icon-search">
+				<p:column>
+					<p:submenu label="Visualizar entidades">
+					
+						<p:menuitem icon="ui-icon-search" value="Alunos cadastrados"
+							url="/privada/alunosCadastrados.xhtml"
+							rendered="#{professorBeans.isUserInRole('PROF')}" />
+							
+						<!-- PÁGINA PÚBLICA-->
+						
+						<p:menuitem icon="ui-icon-search" value="Turmas cadastradas"
+							url="/publica/turmasCadastradas.xhtml" />
+							
+						<p:menuitem icon="ui-icon-search" value="Professores cadastrados"
+							url="/publica/professoresCadastrados.xhtml" />
+							
+						<p:menuitem icon="ui-icon-search" value="Disciplinas cadastrados"
+							url="/publica/disciplinasCadastradas.xhtml	" />
+					</p:submenu>
+
+
+				</p:column>
+
+			</p:submenu>
+
+		</p:megaMenu>
+
+
+		<p:dataTable var="prof" value="#{professorBeans.profs}"
+			emptyMessage="Sem professores cadastrados!" editable="true">
+
+			<p:ajax event="rowEdit" listener="#{professorBeans.onRowEdit(prof)}"
+				update=":form:growl" />
+
+			<p:column headerText="ID" sortBy="#{prof.id}" sortable="true">
+				<h:outputText value="#{prof.id}" />
+			</p:column>
+
+			<p:column headerText="Nome">
+
+				<p:cellEditor>
+					<f:facet name="output">
+						<h:outputText value="#{prof.nome}" />
+					</f:facet>
+
+					<f:facet name="input">
+						<h:inputText value="#{prof.nome}" style="width:100%" />
+					</f:facet>
+
+				</p:cellEditor>
+			</p:column>
+
+			<p:column headerText="Especializacao">
+				<p:cellEditor>
+					<f:facet name="output">
+						<h:outputText value="#{prof.especializacao}" />
+					</f:facet>
+
+					<f:facet name="input">
+						<h:inputText value="#{prof.especializacao}" style="width:100%" />
+					</f:facet>
+
+				</p:cellEditor>
+			</p:column>
+
+			<p:column style="width:32px">
+				<p:rowEditor />
+			</p:column>
+			<p:column style="width:120px">
+				<p:commandButton value="Remover" update="form"
+					rendered="#{professorBeans.isUserInRole('PROF')}"
+					action="#{professorBeans.removerProfessor(prof)}" />
+			</p:column>
+
+
+		</p:dataTable>
+
+
+
+	</h:form>
+</h:body>
+</html>

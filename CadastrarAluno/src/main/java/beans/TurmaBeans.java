@@ -6,11 +6,11 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 
+import org.primefaces.PrimeFaces;
 import org.primefaces.model.DualListModel;
 
 import Servicos.AlunoServicos;
@@ -27,16 +27,7 @@ public class TurmaBeans implements Serializable {
 	private Set<Turma> turmas;
 	
 	
-	public ArrayList<String> getSelectIdAlunos() {
-		return selectIdAlunos;
-	}
-
-	public void setSelectIdAlunos(ArrayList<String> selectIdAlunos) {
-		this.selectIdAlunos = selectIdAlunos;
-	}
-
 	private ArrayList<String> selectIdAlunos;
-	
 	
 	@Inject
 	private TurmaServicos service;
@@ -44,7 +35,10 @@ public class TurmaBeans implements Serializable {
 	@Inject
 	private AlunoServicos alunoService;
 	
+	private Turma turmaSelecionada = new Turma();
+	
 	private boolean renderPanelEdicao;
+	
 	private DualListModel<Aluno> pickListAluno;
 
 
@@ -105,24 +99,113 @@ public class TurmaBeans implements Serializable {
 	public void setPickListAluno(DualListModel<Aluno> pickListAluno) {
 		this.pickListAluno = pickListAluno;
 	}
+	
+	
+	public ArrayList<String> getSelectIdAlunos() {
+		return selectIdAlunos;
+	}
+
+	public void setSelectIdAlunos(ArrayList<String> selectIdAlunos) {
+		this.selectIdAlunos = selectIdAlunos;
+	}
+
 
 	//Métdos 
 	
 	
-			//Limpar Turma
-	public void limpar() {
+			//Atualizar Turma
+	public void atualizar() {
 		turma = new Turma();
 		turmas = (Set<Turma>)getService().getAll();
 	}
 	
+	
 			//Remover Turma
 	public void removerTurma(Turma t) {
 		service.remove(t);
-		limpar();
+		atualizar();
+	}
+	
+	
+			//Botão de concluir edição de lista de alunos da turma
+	
+	public void concluirEdicao() {
+		Set<Aluno> alunosTurmaSelecionada = new HashSet<Aluno>();
+		alunosTurmaSelecionada.addAll(getPickListAluno().getTarget());
+		turmaSelecionada.getAlunos().addAll(alunosTurmaSelecionada);
+		service.update(turmaSelecionada);
+		atualizar();
+		PrimeFaces.current().ajax().update("form");
+		setPickListAluno(new DualListModel<Aluno>());
+		setRenderPanelEdicao(false);
 	}
 
 
+			//Salvar Turma
 	
+	public void salvarTurma() {
+		List<Aluno> alunos = alunoService.getAll();
+		
+					//Não selecionou alunos para salvar :
+		
+		if (selectIdAlunos.isEmpty()) {
+			FacesContext.getCurrentInstance().addMessage(null,
+					new FacesMessage("ERRO", "Selecione ao menos um aluno!"));
+		} else {
+			
+			//Percorrer a lista de Id e de Alunos para encontrar seu correspondente e salvar:
+
+			Set<Aluno> alunosC = new HashSet<Aluno>();
+			
+			for (String l : selectIdAlunos) {
+				for (Aluno a : alunos) {
+					if (Long.toString((a.getId())).equals(l)) {
+						alunosC.add(a);
+					}
+				}
+			}
+			
+			//Verificar a existência de alunos duplicados:
+			
+			String alunosDuplicados = "Os alunos: ";
+			
+			boolean ehDuplicado = false;
+			for (Aluno a : alunosC) {
+				for (Turma t : service.getAll()) {
+					for (Aluno b : t.getAlunos()) {
+						if (a.getId().equals(b.getId())) {
+							ehDuplicado = true;
+							alunosDuplicados += a.getNome() + ", ";
+						}
+					}
+				}
+			}
+
+			if (ehDuplicado) {
+				FacesContext.getCurrentInstance().addMessage(null,
+						new FacesMessage("ERRO", alunosDuplicados + "já estao cadastrados!"));
+				atualizar();
+			} else {
+				turma.setAlunos(alunosC);
+				service.save(turma);
+				atualizar();
+			}
+
+		}
+		atualizar();
+
+	}
+	
+			//Iniciar lista de alunos totais e lista de alunos selecionados para a turma:
+	public void iniciarDualListAluno() {
+		ArrayList<Aluno> alunosSource = new ArrayList<Aluno>();
+		ArrayList<Aluno> alunosTarget = new ArrayList<Aluno>();
+		alunosSource.addAll(getAlunoService().getAll());
+		alunosSource.removeAll(turmaSelecionada.getAlunos());
+		alunosTarget.addAll(turmaSelecionada.getAlunos());
+		setPickListAluno(new DualListModel<Aluno>(alunosSource, alunosTarget));
+	}
+
 	
 
 }

@@ -18,7 +18,7 @@ public class Turma implements Identificavel {
 	@SequenceGenerator(name="turma_seq")
 	private Long id;
 	private Set<Disciplina> disciplinas;
-	
+	private Set<Aluno> alunos;
 	
 	
 	public String getNome() {
@@ -39,6 +39,14 @@ public class Turma implements Identificavel {
 	public void setDisciplinas(Set<Disciplina> disciplinas) {
 		this.disciplinas = disciplinas;
 	}
+	public Set<Aluno> getAlunos() {
+		return alunos;
+	}
+	public void setAlunos(Set<Aluno> alunos) {
+		this.alunos = alunos;
+	}
+
+
 	
 	
 	
