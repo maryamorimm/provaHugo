@@ -20,7 +20,7 @@
 	</servlet-mapping>
 	<context-param>
 		<param-name>primefaces.THEME</param-name>
-		<param-value>trontastic</param-value>
+		<param-value>hot-sneaks</param-value>
 	</context-param>
 	<session-config>
 		<session-timeout>1</session-timeout>
