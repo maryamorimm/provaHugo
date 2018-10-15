@@ -6,10 +6,13 @@ import java.security.Principal;
 import java.util.Set;
 
 import javax.annotation.PostConstruct;
+import javax.enterprise.context.SessionScoped;
 import javax.faces.application.FacesMessage;
+import javax.faces.bean.ViewScoped;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
+import javax.inject.Named;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -17,6 +20,8 @@ import javax.servlet.http.HttpSession;
 import Servicos.ProfessorServicos;
 import entidades.Professor;
 
+@SessionScoped
+@Named
 public class ProfessorBeans  implements Serializable {
 	
 
@@ -74,7 +79,7 @@ public class ProfessorBeans  implements Serializable {
 		this.confirmarSenha = confirmarSenha;
 	}
 
-// métodos 
+// mï¿½todos 
 	
 	@PostConstruct
 	private void init() {
@@ -95,6 +100,7 @@ public class ProfessorBeans  implements Serializable {
 			FacesContext.getCurrentInstance().addMessage(null, new FacesMessage("ERROR", "senhas diferentes!"));
 		} else {
 			boolean mesmoLogin = false;
+			profs = (Set<Professor>) getService().getAll();
 			for (Professor p : profs) {
 				if (professor.getEmail().equals(p.getEmail())) {
 					mesmoLogin = true;
@@ -102,7 +108,7 @@ public class ProfessorBeans  implements Serializable {
 			}
 			if (mesmoLogin) {
 				FacesContext.getCurrentInstance().addMessage(null,
-						new FacesMessage("ERROR", "login já existe"));
+						new FacesMessage("ERROR", "login jï¿½ existe"));
 			} else {
 				service.save(professor);
 				atualizar();
@@ -133,9 +139,9 @@ public class ProfessorBeans  implements Serializable {
 		ExternalContext externalContext = facesContext.getExternalContext();
 		Principal userPrincipal = externalContext.getUserPrincipal();
 		if (userPrincipal == null) {
-			return "Olá! Faça o login para usar o sistema";
+			return "Olï¿½! Faï¿½a o login para usar o sistema";
 		}
-		return "Olá, "+userPrincipal.getName();
+		return "Olï¿½, "+userPrincipal.getName();
 	}
 
 	public void efetuarLogout() throws IOException, ServletException {

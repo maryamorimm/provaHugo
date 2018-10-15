@@ -22,55 +22,7 @@
 	</h:form>
 	<h:form id="form">
 		<p:growl id="growl" showDetail="true" sticky="true" />
-		<p:megaMenu orientation="horizontal" style="margin-top:20px">
-			<p:submenu label="Cadastro" icon="ui-icon-disk"
-				rendered="#{professorBeans.isUserInRole('PROF')}">
-				
-				
-				<p:column>
-						<p:submenu label="Cadastros de entidadaes">
-					<p:menuitem icon="ui-icon-disk" value="Criar Professor"
-						url="/privada/criarProfessor.xhtml" />
-					<p:menuitem icon="ui-icon-disk" value="Criar Aluno"
-						url="/privada/criarAluno.xhtml" />
-					<p:menuitem icon="ui-icon-disk" value="Criar Disciplina"
-						url="/privada/criarDisciplinaxhtml" />
-					<p:menuitem icon="ui-icon-disk" value="Criar Turma"
-						url="/privada/criarTurma.xhtml" />
-					<p:menuitem icon="ui-icon-disk" value="Matricular disciplina"
-						url="/privada/matricularNaDisciplina.xhtml" />
-
-				</p:submenu>
-
-				</p:column>
-
-			</p:submenu>
-			<p:submenu label="Visualizar" icon="ui-icon-search">
-				<p:column>
-					<p:submenu label="Visualizar entidades">
-					
-						<p:menuitem icon="ui-icon-search" value="Alunos cadastrados"
-							url="/privada/alunosCadastrados.xhtml"
-							rendered="#{professorBeans.isUserInRole('PROF')}" />
-							
-						<!-- PÁGINA PÚBLICA-->
-						
-						<p:menuitem icon="ui-icon-search" value="Turmas cadastradas"
-							url="/publica/turmasCadastradas.xhtml" />
-							
-						<p:menuitem icon="ui-icon-search" value="Professores cadastrados"
-							url="/publica/professoresCadastrados.xhtml" />
-							
-						<p:menuitem icon="ui-icon-search" value="Disciplinas cadastrados"
-							url="/publica/disciplinasCadastradas.xhtml	" />
-					</p:submenu>
-
-
-				</p:column>
-
-			</p:submenu>
-
-		</p:megaMenu>
+		
 
 
 		<p:dataTable var="prof" value="#{professorBeans.profs}"

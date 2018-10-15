@@ -27,7 +27,7 @@
 	</session-config>
 	<login-config>
 		<auth-method>FORM</auth-method>
-		<realm-name>escolaJdbcRealm</realm-name>
+		<realm-name>raquelJdbcRealm</realm-name>
 		<form-login-config>
 			<form-login-page>/publica/login.xhtml</form-login-page>
 			<form-error-page>/publica/login.xhtml?error=true</form-error-page>
